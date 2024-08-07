@@ -66,17 +66,7 @@ class ProductManager{
 
     }
 
-    //Metodos auxiliares
-    async leerArchivo(){
-        const respuesta = await fs.readFile(this.path, "utf-8")
-        const arrayProductos = JSON.parse(respuesta)
-        return arrayProductos
-    }
-    async guardarArchivo (arrayProductos){
-        await fs.writeFile(this.path, JSON.stringify(arrayProductos, null, 2))
-    }
-
-//Metodos para actualizar productos:
+//Metodo para actualizar un producto:
     async updateProduct(id, productoActualizado){
         try {
             const arrayProductos = await this.leerArchivo()
@@ -92,19 +82,35 @@ class ProductManager{
             console.log("Tenemos un error al actualizar los productos")
         }
     }
+
+    //Metodo para eliminar un producto
     async deleteProduct(id){
         try {
             const arrayProductos = await this.leerArchivo()
             const index = arrayProductos.findIndex( prod => prod.id === id)
             if(index !== -1){
                 arrayProductos.splice(index, 1)
+                await this.guardarArchivo(arrayProductos)
                 console.log("Producto eliminado")
+                return true
             }else{
                 console.log("No se encontro el producto")
+                return false
             }
         } catch (error) {
             console.log("Tenemos un error al eliminar los productos")
+            throw error
         }
+    }
+
+        //Metodos auxiliares
+    async leerArchivo(){
+        const respuesta = await fs.readFile(this.path, "utf-8")
+        const arrayProductos = JSON.parse(respuesta)
+        return arrayProductos
+    }
+    async guardarArchivo (arrayProductos){
+        await fs.writeFile(this.path, JSON.stringify(arrayProductos, null, 2))
     }
     }
 
