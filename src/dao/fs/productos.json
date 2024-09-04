@@ -28,11 +28,28 @@
   },
   {
     "id": 4,
-    "title": "Azúcar",
-    "description": "Ledesma",
-    "price": 100,
+    "title": "Leche",
+    "description": "Larga vida",
+    "price": 1200,
+    "code": "986548",
+    "stock": 33
+  },
+  {
+    "id": 5,
+    "title": "Chocolate",
+    "description": "arcor",
+    "price": "2900",
     "thumbnail": "sin imagen",
-    "code": "jkl012",
-    "stock": 40
+    "code": "124596",
+    "stock": "90"
+  },
+  {
+    "id": 6,
+    "title": "Torta",
+    "description": "Crema",
+    "price": 8000,
+    "thumbnail": "sin imagen",
+    "code": "9856456",
+    "stock": 4
   }
 ]

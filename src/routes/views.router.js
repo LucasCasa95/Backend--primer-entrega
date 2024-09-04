@@ -1,12 +1,15 @@
 const express = require("express")
 const router = express.Router()
-const ProductManager = require("../manager/product-manager.js")
-const manager = new ProductManager("./src/data/productos.json")
+const ProductManager = require("../dao/db/product-manager-db.js")
+const productManager = new ProductManager()
+const CartManager = require("../dao/db/cart-manager-db.js")
+const cartManager = new CartManager
+const mongoose = require("mongoose")
 
 //Ruta /products que me muestra el listado actual de mis productos. Utilizando express-handlebars.
 
 router.get("/products", async (req, res) => {
-    const productos = await manager.getProducts()
+    const productos = await productManager.getProducts()
     res.render("home", {productos})
 })
 

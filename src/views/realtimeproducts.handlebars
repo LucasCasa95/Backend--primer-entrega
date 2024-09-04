@@ -1,11 +1,45 @@
 <h2>Mostrar los productos en tiempo real</h2>
-
 <div id="contenedorProductos"></div>
 
-<h2>Formulario que envie un producto</h2>
+<h2>Formulario que envíe un producto</h2>
+<div>
+    <h3>Agregar Productos</h3>
+    <form id="addForm" method="POST">
+        <div>
+            <label for="title">Nombre:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <br>
+        <div>
+            <label for="description">Descripción:</label>
+            <input type="text" id="description" name="description" required>
+        </div>
+        <br>
+        <div>
+            <label for="code">Código:</label>
+            <input type="text" id="code" name="code" required>
+        </div>
+        <br>
+        <div>
+            <label for="price">Precio:</label>
+            <input type="number" id="price" name="price" required>
+        </div>
+        <br>
+        <div>
+            <label for="stock">Stock:</label>
+            <input type="number" id="stock" name="stock" required>
+        </div>
+        <div>
+            <br>
+            <label for="thumbnail">Thumbnail:</label>
+            <input type="text" id="thumbnail" name="thumbnail">
+            </div>
+        <br>
+        <div>
+            <button id="boton_agregar" type="submit">Agregar Producto</button>
+        </div>
+    </form>
+</div>
 
-<form id="idFormulario" action=""></form>
-
-{{!-- Agregar aca el cdn de Socket.io--}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
 <script src="js/main.js"></script>
