@@ -20,7 +20,7 @@ const renderProductos = (productos) => {
         contenedorProductos.appendChild(card);
 
         card.querySelector("button").addEventListener("click", () => {
-            eliminarProducto(item.id);
+            eliminarProducto(item._id);
         });
     });
 };
@@ -40,6 +40,7 @@ document.getElementById("addForm").addEventListener("submit", (event) => {
     const code = document.getElementById('code').value;
     const price = parseFloat(document.getElementById('price').value); // Asegúrate de que sea un número
     const stock = parseInt(document.getElementById('stock').value); // Asegúrate de que sea un número
+    const category = document.getElementById('category').value
     const thumbnail = document.getElementById('thumbnail').value || "sin imagen"
 
     const product = {
@@ -48,6 +49,7 @@ document.getElementById("addForm").addEventListener("submit", (event) => {
         code,
         price,
         stock,
+        category,
         thumbnail, 
     };
 

@@ -1,9 +1,9 @@
 const ProductModel = require("../models/product.model.js")
 
 class ProductManager{
-    async addProduct({title, description, price, thumbnail, code, stock}){
+    async addProduct({title, description, price, code, stock, category, thumbnail}){
         try {
-            if(!title || !description || !price || !thumbnail || !code || !stock){
+            if(!title || !description || !price || !thumbnail || !code || !stock || !category){
             console.log("Todos los campos son obligatorios")
             return
         }
@@ -20,6 +20,7 @@ class ProductManager{
             thumbnail: thumbnail || [],
             code,
             stock,
+            category,
             status: true
         })
         await nuevoProducto.save()
@@ -29,46 +30,55 @@ class ProductManager{
         }
     }
 
-    // async getProducts(filters){
-    //     try {
-    //         if (!filters || typeof filters !== 'object') {
-    //             throw new Error("Los filtros no son válidos.");
-    //         }
-    //         const filter = {}
-    //         const options= {page:1, limit: 6, sort: {}}
+    async getProducts(filters = {}) {
+        try {
+            const filter = {}
+            const options = { page: 1, limit: 5, sort: {} }
+    
+            // Verificar si filters está definido
+            if (filters && typeof filters === 'object') {
+                if (filters.sort) {
+                    options.sort.price = filters.sort === "desc" ? -1 : 1
+                }
+    
+                if (filters.category) {
+                    filter.category = filters.category
+                }
+    
+                if (filters.status) {
+                    filter.status = filters.status === "true"
+                }
+    
+                if (filters.page) {
+                    options.page = parseInt(filters.page, 10)
+                }
+    
+                if (filters.limit) {
+                    options.limit = parseInt(filters.limit, 10)
+                }
+            }
+    
+            const arrayProductos = await ProductModel.paginate(filter, options)
+            return arrayProductos
+        } catch (error) {
+            console.log("Error al obtener los productos", error)
+            throw error
+        }
+    }
+    
 
-    //         if (filters.sort) {
-    //             options.sort.price = filters.sort === "desc" ? -1: 1
-    //         }
-
-    //         if(filters.page) {
-    //             options.page = parseInt(filters.page, 10)
-    //         }
-
-    //         if (filters.limit) {
-    //             options.limit = parseInt(filters.limit, 10)
-    //         }
-
-    //         const arrayProductos = await ProductModel.paginate(filter, options)
+    // async getProducts(){
+    //         const arrayProductos = await ProductModel.find().lean()
     //         return arrayProductos
     //     } catch (error) {
     //         console.log("Error al obtener los productos", error)
     //     }
 
-    // }
-
-    async getProducts(){
-            const arrayProductos = await ProductModel.find().lean()
-            return arrayProductos
-        } catch (error) {
-            console.log("Error al obtener los productos", error)
-        }
-
     
 
     async getProductById(id){
         try {
-            const producto = await ProductModel.findById(id).lean()
+            const producto = await ProductModel.findById(id)
             if(!producto) {
                 console.log("producto no encontrado")
                 return null

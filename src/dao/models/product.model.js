@@ -14,9 +14,6 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    thumbnail: {
-        type: [String]
-    },
     code: {
         type: String,
         required: true,
@@ -26,9 +23,16 @@ const productSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
+    category: {
+        type: String,
+        required: true
+    },
     status:{
         type: Boolean,
         required: true
+    },
+    thumbnail: {
+        type: [String]
     }
 })
 productSchema.plugin(mongoosePaginate)

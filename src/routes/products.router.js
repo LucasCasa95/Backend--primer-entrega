@@ -11,10 +11,14 @@ router.get("/", async (req, res) =>{
     try {
         const limit = parseInt(req.query.limit) || 10
         const sort = req.query.sort
+        const category = req.query.category
+        const status = req.query.status
         const page = parseInt(req.query.page) || 1
 
             const filters = {
-                sort,   
+                sort,
+                category,
+                status,   
                 page, 
                 limit
             }

@@ -44,12 +44,12 @@ class CartManager{
     async addProductToCart(carritoId, productoId, quantity = 1) {
         try {
             const carrito = await this.getCartById(carritoId)
-            const existeProducto = carrito.products.find(item => item.product.toString() === productoId)
+            const existeProducto = carrito.products.find(item => item.productId.toString() === productoId)
 
             if(existeProducto) {
                 existeProducto.quantity += quantity
             }else{
-                carrito.products.push({product: productoId, quantity})
+                carrito.products.push({productId: productoId, quantity})
             }
             //Vamos a marcar la propiedad "products" como modificada antes de guardar
             carrito.markModified("products")

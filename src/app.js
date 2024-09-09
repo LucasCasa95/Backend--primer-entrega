@@ -38,8 +38,9 @@ io.on("connection", async (socket) =>{
     socket.emit("productos", await manager.getProducts())
     //Con un evento y el metodo "on" se escucha desde el main.js y se muestra en pantalla
     socket.on("createProduct",  async (data) => {
-        //console.log("Recibiendo producto:", data)
+        console.log("Recibiendo producto:", data)
         await manager.addProduct(data);
+        console.log("producto agregado con exito")
         io.emit("productos",  await manager.getProducts()); 
     });
 
