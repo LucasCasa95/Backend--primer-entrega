@@ -2,7 +2,7 @@ const socket = io();
 
 // Escuchar el evento "productos" y recibir ese array de datos
 socket.on("productos", (data) => {
-    renderProductos(data);
+    renderProductos(data.docs);
 });
 
 // Función para renderizar productos

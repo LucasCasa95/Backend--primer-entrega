@@ -1,4 +1,5 @@
-const CartModel = require("../models/cart.model.js")
+import CartModel from "../models/cart.model.js";
+
 
 class CartManager{
     //Crear el carrito
@@ -131,4 +132,4 @@ class CartManager{
 }
 
 
-module.exports = CartManager
+export default CartManager;

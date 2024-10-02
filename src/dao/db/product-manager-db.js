@@ -1,4 +1,5 @@
-const ProductModel = require("../models/product.model.js")
+import ProductModel from "../models/product.model.js";
+
 
 class ProductManager{
     async addProduct({title, description, price, code, stock, category, thumbnail}){
@@ -121,4 +122,4 @@ class ProductManager{
     }
 
 
-    module.exports = ProductManager
+    export default ProductManager

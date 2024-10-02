@@ -1,7 +1,9 @@
-const express = require("express")
-const ProductManager = require("../dao/db/product-manager-db.js")
-const manager = new ProductManager()
-const router = express.Router()
+import express from "express";
+import ProductManager from "../dao/db/product-manager-db.js";
+
+const manager = new ProductManager();
+const router = express.Router();
+
 
 //Listar todos los productos:
 
@@ -88,4 +90,4 @@ router.delete("/:pid", async (req, res) => {
         }
 })
 
-module.exports = router
+export default router

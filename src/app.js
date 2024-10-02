@@ -1,17 +1,27 @@
-const express = require("express")
-const exphbs = require("express-handlebars");
-const socket = require("socket.io")
-const productRouter = require("./routes/products.router.js")
-const cartsRouter = require("./routes/carts.router.js")
-const viewsRouter = require("./routes/views.router.js")
-const app = express()
-const PUERTO = 8080
-require("./database.js")
+import express from "express";
+import exphbs from "express-handlebars";
+import { Server as socket } from "socket.io";
+import productRouter from "./routes/products.router.js";
+import cartsRouter from "./routes/carts.router.js";
+import viewsRouter from "./routes/views.router.js";
+import userRouter from "./routes/user.router.js"
+import userViews from "./routes/userviews.router.js"
+import cookieParser from "cookie-parser";
+import passport from "passport";
+import initializePassport from "./config/passport.config.js"
+import "./database.js";
+
+const app = express();
+const PUERTO = 8080;
+
 
 //Middleware:
 app.use(express.json())
 app.use(express.urlencoded({extended: true})); 
-app.use(express.static("./src/public")); 
+app.use(express.static("./src/public"));
+app.use(cookieParser());
+app.use(passport.initialize()); 
+initializePassport()
 //Le decimos al servidor que vamos a trabajar con JSON
 
 //Configuramos Express-Handlebar
@@ -23,24 +33,26 @@ app.set("views", "./src/views");
 app.use("/api/products", productRouter)
 app.use("/api/carts", cartsRouter)
 app.use("/", viewsRouter)
+app.use("/", userViews)
+app.use("/api/sessions", userRouter)
 
 const httpServer = app.listen(PUERTO, () =>{
     console.log(`Escuchando en el http://localhost:${PUERTO}`)
 })
 
-const ProductManager = require("./dao/db/product-manager-db.js")
+import ProductManager from "./dao/db/product-manager-db.js"
 const manager = new ProductManager()
 
-const io = socket(httpServer)
+const io = new socket(httpServer)
 
 io.on("connection", async (socket) =>{
     //Se envia el array de productos a la vista realtimeproducts
     socket.emit("productos", await manager.getProducts())
     //Con un evento y el metodo "on" se escucha desde el main.js y se muestra en pantalla
     socket.on("createProduct",  async (data) => {
-        console.log("Recibiendo producto:", data)
+        //console.log("Recibiendo producto:", data)
         await manager.addProduct(data);
-        console.log("producto agregado con exito")
+        //console.log("producto agregado con exito")
         io.emit("productos",  await manager.getProducts()); 
     });
 

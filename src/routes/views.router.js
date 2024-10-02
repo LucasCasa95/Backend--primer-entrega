@@ -1,10 +1,11 @@
-const express = require("express")
-const router = express.Router()
-const ProductManager = require("../dao/db/product-manager-db.js")
-const productManager = new ProductManager()
-const CartManager = require("../dao/db/cart-manager-db.js")
-const cartManager = new CartManager
-const mongoose = require("mongoose")
+import express from "express";
+import ProductManager from "../dao/db/product-manager-db.js";
+import CartManager from "../dao/db/cart-manager-db.js";
+import mongoose from "mongoose";
+
+const router = express.Router();
+const productManager = new ProductManager();
+const cartManager = new CartManager();
 
 //Ruta /products que me muestra el listado actual de mis productos. Utilizando express-handlebars.
 
@@ -49,4 +50,4 @@ router.get("/realtimeproducts", (req, res) => {
     res.render("realtimeproducts")
 })
 
-module.exports = router
+export default router;

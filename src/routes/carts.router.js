@@ -1,8 +1,10 @@
-const express = require("express")
-const router = express.Router()
-const CartManager = require("../dao/db/cart-manager-db.js")
-const cartManager = new CartManager()
-const mongoose = require("mongoose")
+import express from "express";
+import CartManager from "../dao/db/cart-manager-db.js";
+import mongoose from "mongoose";
+
+const router = express.Router();
+const cartManager = new CartManager();
+
 
 router.get('/', async (req, res) => {
     try {
@@ -117,4 +119,4 @@ router.delete('/:cid/products/:pid', async (req, res) => {
 
 
 
-module.exports = router
+export default router
