@@ -7,9 +7,12 @@ const router = express.Router();
 const productManager = new ProductManager();
 const cartManager = new CartManager();
 
+import {soloAdmin, soloUser} from "../middleware/auth.js"
+import passport from "passport"
+
 //Ruta /products que me muestra el listado actual de mis productos. Utilizando express-handlebars.
 
-router.get("/products", async (req, res) => {
+router.get("/products", passport.authenticate("current", {session:false}), soloUser, async (req, res) => {
     try {
         const limit = parseInt(req.query.limit) || 10
         const sort = req.query.sort
@@ -43,10 +46,16 @@ router.get("/products", async (req, res) => {
     }
 })
 
-//Punto dos. Mostrar los productos en tiempo real
-//Con formulario para agregar y boton de eliminar
 
-router.get("/realtimeproducts", (req, res) => {
+router.get("/login", (req, res) => {
+    res.render("login"); 
+})
+
+router.get("/register", (req, res) => {
+    res.render("register"); 
+})
+
+router.get("/realtimeproducts", passport.authenticate("current", {session:false}), soloAdmin, (req, res) => {
     res.render("realtimeproducts")
 })
 

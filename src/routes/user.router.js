@@ -1,110 +1,16 @@
-import {Router} from "express";
-import UsuarioModel from "../dao/models/user.model.js";
-import CartModel from "../dao/models/cart.model.js";
-import jwt from "jsonwebtoken";
-import passport from "passport";
-import {createHash, isValidPassword} from "../utils/util.js"
-
+import { Router } from 'express';
+import passport from 'passport';
 const router = Router();
 
-//Ruta Registro
-router.post("/register", async (req, res)=>{
-    let {usuario, password, first_name, last_name, age, email} = req.body;
-   
-    try{
-        const existeUsuario = await UsuarioModel.findOne({usuario})
-        
-        if(existeUsuario){
-            return res.status(400).send("Usuario Existente")
-        }
-
-        //Creo un carrito nuevo
-        const nuevoCarrito = new CartModel();
-        nuevoCarrito.save
-
-        const nuevoUsuario = new UsuarioModel({
-            usuario,
-            first_name,
-            last_name,
-            age,
-            email,
-            cart: nuevoCarrito._id,
-            password: createHash(password)
-            
-        });
-       
-        await nuevoUsuario.save();
-
-        const token = jwt.sign({usuario: nuevoUsuario.usuario,
-            first_name: nuevoUsuario.first_name,
-            last_name: nuevoUsuario.last_name,
-            age: nuevoUsuario.age, email: nuevoUsuario.email}, "coderhouse", {expiresIn: "1h"})
-
-        //Generamos Cookie
-        res.cookie("coderCookieToken", token, {maxAge: 3600000, httpOnly: true})
-        res.redirect("/api/sessions/current")
-
-    }catch(error){
-            res.status(500).send("Error del servidor al Registrar")
-
-    }
-})
+import UserController from '../controllers/user.controller.js';
+const userController = new UserController(); 
 
 
-//Ruta Login
+router.post("/register", userController.register); 
+router.post("/login", userController.login);
+router.get("/current", passport.authenticate("current", {session: false}), userController.current); 
+router.post("/logout", userController.logout); 
 
-router.post("/login", async(req, res)=>{
-    let {usuario,password} = req.body;
 
-    try{
-        //Buscar el usuario en Mongo
-        const usuarioEncontrado = await UsuarioModel.findOne({usuario});
-        if(!usuarioEncontrado){
-            return res.status(401).send("Usuario No Identificado")
-        }
-
-        //Se verifica Contraseña
-        if(!isValidPassword(password, usuarioEncontrado)){
-            return res.status(401).send("Usuario No Identificado")
-        }
-
-        const token = jwt.sign({usuario: usuarioEncontrado.usuario,
-            first_name: usuarioEncontrado.first_name,
-            last_name: usuarioEncontrado.last_name,
-            age: usuarioEncontrado.age,
-            email: usuarioEncontrado.email,
-            rol: usuarioEncontrado.rol,}, "coderhouse", {expiresIn: "1h"})
-
-        //Generamos Cookie
-        res.cookie("coderCookieToken", token, {maxAge: 3600000, httpOnly: true})
-        res.redirect("/api/sessions/current")
-
-    }catch (error){
-        res.status(500).send("Error del servidor")
-    }
-
-})
-
-router.get("/current", passport.authenticate("current", {session: false}), (req,res)=>{
-    res.render("homeuser", {usuario: req.user.usuario})
-})
-
-//LOGOUT
-router.post("/logout", (req,res)=>{
-    //Limpieza de COOKIE
-    res.clearCookie("coderCookieToken")
-    res.redirect("/login")
-})
-
-//Ruta Admin
-router.get("/admin", passport.authenticate("current", {session:false}) ,(req,res)=>{
-    
-    //Verifica si el usuario es administrador
-    if(req.user.rol !=="admin"){
-        return res.status(403).send("Acceso Denegado")
-    }
-
-    res.render("admin", {usuario: req.user.usuario})
-})
 
 export default router;

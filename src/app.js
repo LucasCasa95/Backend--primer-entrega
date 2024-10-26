@@ -5,7 +5,6 @@ import productRouter from "./routes/products.router.js";
 import cartsRouter from "./routes/carts.router.js";
 import viewsRouter from "./routes/views.router.js";
 import userRouter from "./routes/user.router.js"
-import userViews from "./routes/userviews.router.js"
 import cookieParser from "cookie-parser";
 import passport from "passport";
 import initializePassport from "./config/passport.config.js"
@@ -33,7 +32,6 @@ app.set("views", "./src/views");
 app.use("/api/products", productRouter)
 app.use("/api/carts", cartsRouter)
 app.use("/", viewsRouter)
-app.use("/", userViews)
 app.use("/api/sessions", userRouter)
 
 const httpServer = app.listen(PUERTO, () =>{

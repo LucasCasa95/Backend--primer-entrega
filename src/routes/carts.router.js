@@ -1,57 +1,28 @@
 import express from "express";
-import CartManager from "../dao/db/cart-manager-db.js";
-import mongoose from "mongoose";
-
 const router = express.Router();
-const cartManager = new CartManager();
+import mongoose from "mongoose";
+//Importamos el controlador
+import CartController from "../controllers/cart.controller.js"
+const controller = new CartController()
 
 
-router.get('/', async (req, res) => {
-    try {
-        const carritos = await cartManager.getCarts();
-        res.status(200).json(carritos);
+// router.get('/', async (req, res) => {
+//     try {
+//         const carritos = await cartManager.getCarts();
+//         res.status(200).json(carritos);
  
-    } catch (error) {
-        res.status(500).send("Error al obtener los productos");
-    }
-});
+//     } catch (error) {
+//         res.status(500).send("Error al obtener los productos");
+//     }
+// });
 
 //Ruta post que cree un carrito nuevo.
 
-router.post("/", async (req, res) =>{
-    try {
-        const nuevoCarrito = await cartManager.crearCarrito()
-        res.json(nuevoCarrito)
-    } catch (error) {
-        res.status(500).send("Error del servidor")
-    }
-})
-
+router.post("/", controller.create)
 //Listamos los productos de determinado carrito
-
-router.get("/:cid", async (req, res) => {
-    try {
-        const carritoId = new mongoose.Types.ObjectId(req.params.cid)
-        const carrito = await cartManager.getCartById(carritoId)
-        res.json(carrito.products)
-    } catch (error) {
-        res.status(500).send("Error al obtener los productos del carrito")
-    }
-})
-
+router.get("/:cid",controller.getCart)
 // Agregar productos al carrito
-router.post("/:cid/product/:pid", async (req, res) =>{
-    let carritoId = req.params.cid
-    let productoId = req.params.pid
-    let quantity = req.body.quantity || 1
-
-    try {
-        const actualizado = await cartManager.addProductToCart(carritoId, productoId, quantity)
-        res.json(actualizado.products)
-    } catch (error) {
-        res.status(500).send("Error al agregar productos")
-    }
-})
+router.post("/:cid/product/:pid",controller.addProductToCart)
 
 // Actualizar carrito con array de productos
 router.put('/:cid', async (req, res) => {
@@ -76,7 +47,6 @@ router.put('/:cid', async (req, res) => {
         res.status(500).send("Error al obtener el carrito");
     }
 });
-
 
 
 //Borrar los productos por id
