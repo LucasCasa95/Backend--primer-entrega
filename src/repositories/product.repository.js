@@ -10,7 +10,7 @@ class ProductRepository {
     }
 
     async getProducts(query) {
-        return await productDao.find(query)
+        return await productDao.findOne(query)
     }
 
     async updateProduct(id, productData) {
@@ -20,6 +20,10 @@ class ProductRepository {
     async deleteProduct(id) {
         return await productDao.delete(id)
     }
+
+    async paginate(query,ops){
+        return await productDao.paginate(query, ops)
+    }
 }
 
-export default ProductRepository
+export default new ProductRepository ()

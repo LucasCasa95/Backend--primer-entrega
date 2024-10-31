@@ -1,6 +1,10 @@
 import CartModel from "./models/cart.model.js"
 
 class CartDao {
+    async find() {
+        return await CartModel.find().populate('products.productId')
+    }
+    
     async findById(id) {
         return await CartModel.findById(id).populate('products.productId')
     }

@@ -5,8 +5,8 @@ class ProductDao {
         return await ProductModel.findById(id)
     }
 
-    async find(query) {
-        return await ProductModel.find(query)
+    async findOne(query) {
+        return await ProductModel.findOne(query)
     }
 
     async save(productData) {
@@ -20,6 +20,10 @@ class ProductDao {
 
     async delete(id) {
         return await ProductModel.findByIdAndDelete(id)
+    }
+
+    async paginate(obj, opt){
+        return await ProductModel.paginate(obj,opt)
     }
 }
 
