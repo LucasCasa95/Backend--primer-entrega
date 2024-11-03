@@ -34,44 +34,59 @@ class CartController {
     async addProductToCart(req, res) {
         const { cid, pid } = req.params;
         const { quantity } = req.body;
-
+        const quantityToAdd = quantity || 1;
+    
         try {
-            const cart = await cartService.getCartById(cid);
-            if (!cart) return res.status(404).send("Carrito no encontrado");
-
-            const existProduct = cart.products.find(item => item.productId.toString() === pid);
-            if (existProduct) {
-                existProduct.quantity += quantity;
-            } else {
-                cart.products.push({ productId: pid, quantity });
-            }
-            await cartService.updateCart(cid, cart);
-            res.status(200).send("Producto agregado/actualizado con éxito");
+            const actualizado = await cartService.addProductToCart(cid, pid, quantityToAdd);
+            res.json(actualizado.products);
         } catch (error) {
+            console.error("Error en addProductToCart Controller:", error.message);
             res.status(500).send("Error al agregar productos: " + error.message);
         }
     }
+    
 
     async updateCart(req, res) {
         try {
             const cartId = req.params.cid;
             const { products } = req.body;
-            const updatedProducts = products.map(product => ({
-                productId: new mongoose.Types.ObjectId(product.productId),
-                quantity: product.quantity
-            }));
-
-            const updatedCart = await cartService.updateCart(cartId, { products: updatedProducts });
-
-            if (updatedCart) {
-                res.status(200).json(updatedCart);
-            } else {
-                res.status(404).send("Carrito no encontrado");
+    
+            // Obtén el carrito existente
+            const existingCart = await cartService.getCartById(cartId);
+            if (!existingCart) {
+                return res.status(404).send("Carrito no encontrado");
             }
+    
+            // Mapa de productos existentes en el carrito por productId
+            const existingProductsMap = existingCart.products.reduce((acc, product) => {
+                acc[product.productId.toString()] = product;
+                return acc;
+            }, {});
+    
+            // Actualiza o añade los productos
+            products.forEach(product => {
+                const productId = product.productId.toString();
+                if (existingProductsMap[productId]) {
+                    // Si el producto ya existe, reemplaza la cantidad
+                    existingProductsMap[productId].quantity = product.quantity; // Reemplaza en lugar de sumar
+                } else {
+                    // Si el producto no existe, agrégalo al carrito
+                    existingCart.products.push({
+                        productId: productId,
+                        quantity: product.quantity
+                    });
+                }
+            });
+    
+            // Actualiza el carrito en la base de datos
+            await cartService.updateCart(cartId, existingCart); // Asegúrate de esperar la actualización
+            res.status(200).json(existingCart);
         } catch (error) {
-            res.status(500).send("Error al obtener el carrito: " + error.message);
+            res.status(500).send("Error al actualizar el carrito: " + error.message);
         }
     }
+    
+    
 
     async deleteCartProduct(req, res) {
         try {

@@ -19,7 +19,7 @@ router.post("/:cid/product/:pid", controller.addProductToCart)
 router.put('/:cid', controller.updateCart);
 
 //Borrar los productos por id
-router.delete('/:cid/products/:pid', controller.deleteCartProduct);
+router.delete('/:cid/product/:pid', controller.deleteCartProduct);
 // Vaciar carrito 
 router.delete('/:cid', controller.emptyCart);
 

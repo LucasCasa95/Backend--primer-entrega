@@ -36,8 +36,7 @@ class ProductService{
     }
 
     async getProductById(id){
-            //console.log("product ID desde producto service", id);
-            const productFound= await productRepository.findById(id);
+            const productFound= await productRepository.getProductById(id);
             if(productFound){
                 return productFound
             }else{
@@ -47,7 +46,7 @@ class ProductService{
 
     async updateProduct(id, productData){
         
-            const updateProd = await productRepository.findByIdAndUpdate(id, productData)
+            const updateProd = await productRepository.updateProduct(id, productData)
             if(!updateProd){
                 console.log("No se encontro el producto");
                 return null;
@@ -58,7 +57,7 @@ class ProductService{
 
     async deleteProduct(id){
             
-                const deleteProd = await productRepository.findByIdAndDelete(id)
+                const deleteProd = await productRepository.deleteProduct(id)
                 if(!deleteProd){
                     console.log("No se encontro el producto");
                     return null;

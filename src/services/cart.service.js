@@ -31,23 +31,43 @@ class CartService{
             }
             }
         
-    async addProductToCart(cid, pid, quantity=1){
-        try {
-            const cart = await cartRepository.getCartById(cid);
-            const existProduct = cart.products.find(item => item.productId.toString() === pid)
-            if(existProduct){
-                existProduct.quantity += quantity
-            } else{
-                cart.products.push({productId: pid, quantity})
+            async addProductToCart(cid, pid, quantity = 1) {
+                try {
+                    const cart = await cartRepository.getCartById(cid);
+                    if (!cart) {
+                        throw new Error("Carrito no encontrado");
+                    }
+            
+                    // Asegúrate de que cart.products es un arreglo
+                    if (!Array.isArray(cart.products)) {
+                        throw new Error("El carrito no contiene productos válidos");
+                    }
+            
+                    const existProduct = cart.products.find(item => {
+                        // Comprobar que item.productId es definido antes de intentar acceder a toString
+                        return item.productId && item.productId.toString() === pid;
+                    });
+            
+                    if (existProduct) {
+                        existProduct.quantity += quantity;
+                    } else {
+                        // Asegúrate de que pid es un valor válido antes de agregarlo
+                        if (!pid) {
+                            throw new Error("ID de producto no válido");
+                        }
+                        cart.products.push({ productId: pid, quantity });
+                    }
+            
+                    cart.markModified("products");
+                    await cartRepository.updateCart(cid, cart);
+                    return cart;
+            
+                } catch (error) {
+                    console.error("Error en addProductToCart Service:", error.message);
+                    throw error; // Lanzar el error para que lo maneje el controller
+                }
             }
-            cart.markModified("products");
-            await cartRepository.updateCart(cid,cart);
-            return cart;
-            } catch (error) {
-                console.log("Error al agregar producto")
-                throw error
-            }
-        }
+            
 
     async updateCart(cartId, updateProduct){
         try {

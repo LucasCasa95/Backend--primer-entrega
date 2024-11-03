@@ -1,26 +1,38 @@
-import CartModel from "./models/cart.model.js"
+import CartModel from "./models/cart.model.js";
 
 class CartDao {
     async find() {
-        return await CartModel.find().populate('products.productId')
+        return await CartModel.find(); // Retorna todos los carritos
     }
     
     async findById(id) {
-        return await CartModel.findById(id).populate('products.productId')
+        const cart = await CartModel.findById(id);
+        if (!cart) {
+            throw new Error("Carrito no encontrado"); // Lanzar error si no se encuentra el carrito
+        }
+        return cart;
     }
 
     async save(cartData) {
-        const cart = new CartModel(cartData)
-        return await cart.save()
+        const cart = new CartModel(cartData); // Crea un nuevo carrito
+        return await cart.save(); // Guarda el carrito en la base de datos
     }
 
-    async update (id, cartData) {
-        return await CartModel.findByIdAndUpdate(id, cartData)
+    async update(id, cartData) {
+        const updatedCart = await CartModel.findByIdAndUpdate(id, cartData, { new: true }); // Actualiza y retorna el carrito actualizado
+        if (!updatedCart) {
+            throw new Error("Carrito no encontrado"); // Lanzar error si no se encuentra el carrito
+        }
+        return updatedCart;
     }
 
     async delete(id) {
-        return await CartModel.findByIdAndDelete(id)
+        const deletedCart = await CartModel.findByIdAndDelete(id);
+        if (!deletedCart) {
+            throw new Error("Carrito no encontrado"); // Lanzar error si no se encuentra el carrito
+        }
+        return deletedCart;
     }
 }
 
-export default new CartDao()
+export default new CartDao();
