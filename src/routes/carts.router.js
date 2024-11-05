@@ -9,19 +9,18 @@ const controller = new CartController()
 router.get('/', controller.getCarts);
 //Listamos los productos de determinado carrito
 router.get("/:cid", controller.getCartById)
-
 //Ruta post que cree un carrito nuevo.
 router.post("/", controller.create)
-// Agregar productos al carrito
+//Agregar productos al carrito
 router.post("/:cid/product/:pid", controller.addProductToCart)
-
 //Actualizar carrito
 router.put('/:cid', controller.updateCart);
-
 //Borrar los productos por id
 router.delete('/:cid/product/:pid', controller.deleteCartProduct);
-// Vaciar carrito 
+//Vaciar carrito 
 router.delete('/:cid', controller.emptyCart);
+//Finalizar compra
+router.post("/:cid/purchase", controller.finalizarCompra)
 
 
 

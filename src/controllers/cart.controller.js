@@ -1,4 +1,8 @@
 import cartService from "../services/cart.service.js";
+import productService from "../services/product.service.js";
+import UsuarioModel from "../dao/models/user.model.js";
+import TicketModel from "../dao/models/ticket.model.js";
+import { generateCode, calcularTotal} from "../utils/util.js";
 import mongoose from "mongoose";
 
 class CartController {
@@ -68,9 +72,8 @@ class CartController {
                 const productId = product.productId.toString();
                 if (existingProductsMap[productId]) {
                     // Si el producto ya existe, reemplaza la cantidad
-                    existingProductsMap[productId].quantity = product.quantity; // Reemplaza en lugar de sumar
+                    existingProductsMap[productId].quantity = product.quantity;
                 } else {
-                    // Si el producto no existe, agrégalo al carrito
                     existingCart.products.push({
                         productId: productId,
                         quantity: product.quantity
@@ -79,7 +82,7 @@ class CartController {
             });
     
             // Actualiza el carrito en la base de datos
-            await cartService.updateCart(cartId, existingCart); // Asegúrate de esperar la actualización
+            await cartService.updateCart(cartId, existingCart);
             res.status(200).json(existingCart);
         } catch (error) {
             res.status(500).send("Error al actualizar el carrito: " + error.message);
@@ -119,6 +122,68 @@ class CartController {
             res.status(500).send("No se pudo vaciar el carrito: " + error.message);
         }
     }
+
+    async finalizarCompra(req, res) {
+        const cartId = req.params.cid;
+        try {
+            const cart = await cartService.getCartById(cartId);
+            
+            // Verifica si el carrito fue encontrado
+            if (!cart) {
+                return res.status(404).send("Carrito no encontrado");
+            }
+    
+            const products = cart.products; // Aquí ya sabemos que cart no es undefined
+            const productosNoDisponibles = [];
+    
+            for (const item of products) {
+                const productoId = item.productId;
+                const product = await productService.getProductById(productoId);
+    
+                if (product.stock >= item.quantity) {
+                    product.stock -= item.quantity;
+                    await product.save();
+                } else {
+                    productosNoDisponibles.push(productoId);
+                }
+            }
+    
+            const userWithCart = await UsuarioModel.findOne({ cart: cartId });
+            if (userWithCart) {
+                console.log("Usuario encontrado:", userWithCart.email);
+            } else {
+                console.log("No se encontró usuario con ese carrito.");
+            }
+    
+            const ticket = new TicketModel({
+                code: generateCode(),
+                purchase_datetime: new Date(),
+                amount: await calcularTotal(cart.products),
+                purchaser: userWithCart.email
+            });
+    
+            await ticket.save();
+    
+            // Aquí se filtran los productos que no están disponibles
+            cart.products = cart.products.filter(item =>
+                productosNoDisponibles.some(productoId => productoId.equals(item.productId))
+            );
+    
+            await cart.save();
+    
+            res.send({
+                cliente: userWithCart.first_name,
+                email: userWithCart.email,
+                numTicket: ticket.code,
+                noDisponible: productosNoDisponibles,
+                cartFinal: cart.products
+            });
+        } catch (error) {
+            console.error("Error al procesar la compra", error);
+            res.status(500).json({ error: "Error interno del servidor" });
+        }
+    }
+    
 }
 
 export default CartController;
