@@ -1,4 +1,5 @@
 import mongoose from 'mongoose'
+//nada relevante
 
 
 const ticketSchema = new mongoose.Schema({
